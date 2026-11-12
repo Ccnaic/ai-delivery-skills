@@ -1,0 +1,8 @@
+# 统一换行符，避免跨平台问题
+* text=auto
+
+# 脚本必须 LF，否则 Linux/macOS 下会报 bad interpreter
+*.sh text eol=lf
+
+# Markdown 保持原样
+*.md text
