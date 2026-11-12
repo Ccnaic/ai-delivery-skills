@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
-# sync.sh — 把项目级 skill（源）同步到用户级安装目录
+# sync.sh — 一键安装 / 同步本仓库的 skill 到用户级目录
+#
+# 它做一件事：把本目录下的 5 个 skill 复制到 ~/.workbuddy/skills/
 #
 # 用法：
-#   ./sync.sh             同步
+#   ./sync.sh             安装 / 同步
 #   ./sync.sh --dry-run   只看会改什么，不动文件
 #
-# 只碰本文件列出的 SKILLS，其余（比如 deja-history）一概不动。
+# 三种场景都适用：
+#   1. 刚 clone 下来，想装上         → 直接跑
+#   2. 改完 skill，想同步到已装的    → 直接跑（旧版自动备份成 .bak_时间戳）
+#   3. 只想看会改什么                → 加 --dry-run
+#
+# 只碰下面 SKILLS 里列出的 5 个，其余（比如你自己的 deja-history）一概不动。
+# 装完要新开一个会话才生效——技能清单是会话启动时生成的。
 
 set -uo pipefail
 

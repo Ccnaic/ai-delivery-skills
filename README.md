@@ -1,18 +1,65 @@
-# 五个 skill：一个入口 + 四件工具
+# 五个交付 skill：把「要什么」问清，然后逐条打勾
 
-> **状态：beta。** 可以用，但只跑过一次，规模偏小。下面「验证到什么程度」一节写清了哪些验过、哪些没验——**用之前先读那一节**。
+> **状态：beta。** 只跑过一次全链（749 行 CLI 任务）。哪些验过、哪些没验，见 [验证到什么程度](#验证到什么程度重要别当成稳定版)。**用之前先读那一节。**
 
-一套轻量的需求落地流程。**不依赖多 agent、不依赖特定平台、纯 Markdown。**
+**这是什么**：五个纯 Markdown 的 skill，给 AI agent 加一套交付纪律。不依赖多 agent、不依赖特定平台。
+
+**这解决什么**：AI 最典型的失败不是"做错"，是**把范围悄悄做小，然后在缩小的范围里做到极致**。实测过——让它还原一个游戏，它只做了 1/3 层数，然后用 5,000 行代码把那一层做到很好，**全程没人问过「一共要做几层」**。
+
+**这不是什么**：不是让 AI 变聪明的框架，不是多 agent 编排引擎，也不是质量评审标准。它只防四类失败：
+
+| 失败 | 谁防 | 怎么防 |
+|---|---|---|
+| 范围被悄悄缩小 | `recipe` | 开工前把「做几个/几层/什么不做」写成表，人来拍 |
+| 活分下去有洞 | `swarm` | 切完块回查「每条需求归谁」，无主的单独成块 |
+| AI 瞎做，看不见结果 | `verify-app` | 生成能真的启动应用、操作、截图的验证工具 |
+| 以为做完了 | `recipe` 第四步 | 按**用户原话**逐条打勾，报 N/M |
+| 同样的错反复犯 | `encode-lessons` | 把坑变成机器强制的规则 |
 
 ---
 
-## 它们解决什么问题
+## 30 秒试一下
 
-AI 最典型的失败不是"做错"，是**把范围悄悄做小，然后在缩小的范围里做到极致**。
+```bash
+git clone https://github.com/Ccnaic/ai-delivery-skills.git
+cd ai-delivery-skills
+./sync.sh --dry-run    # 先看会装什么
+./sync.sh              # 装到 ~/.workbuddy/skills/
+```
 
-实测过：让它"还原一个游戏"，它只做了 1/3 层数，然后用 5000 行代码把那一层做得很好——全程没人问过"一共要做几层"。
+装完新开一个会话，然后直接说：
 
-五个 skill：**一个负责判断和编排，四个负责做事**。
+```
+按 deliver 做：<你的任务>
+```
+
+**不想装也能用**——五个文件都是纯文本，直接把 `SKILL.md` 的内容贴给 agent 也行。
+
+---
+
+## 仓库里有什么
+
+```
+README.md          你正在读的（解决什么问题 + 怎么装 + 验证程度）
+LICENSE            MIT
+ATTRIBUTION.md     哪些是借的、借自谁、哪两条是原创 ← 建议读
+CHANGELOG.md       v0.1 → v0.4 的变更
+sync.sh            一键安装 / 同步脚本（也可以只看不动：--dry-run）
+
+deliver/           ★ 入口：先判断要不要走流程，再分档，四道闸门
+recipe/            需求菜谱：8 问 → 追问到清楚 → 复述确认 → 打勾
+swarm/             并行派活：定标准 → 切域 → 回查无主 → 聚合
+verify-app/        给项目装眼睛：生成能驱动应用的验证工具
+encode-lessons/    把重复犯的错变成结构约束
+
+examples/          一次完整运行的产物，看格式用
+```
+
+**只想用一个也行**：五个 skill 互不依赖，只拷你需要的那个目录。
+
+---
+
+## 五个 skill 的分工
 
 | skill | 角色 | 防什么 |
 |---|---|---|
@@ -67,49 +114,49 @@ deliver 第 0 步：够格判断（四条，命中任一才继续）
 
 ## 怎么装
 
-### 方式一：克隆后复制（推荐）
+### WorkBuddy：一条命令
 
 ```bash
 git clone https://github.com/Ccnaic/ai-delivery-skills.git
+cd ai-delivery-skills
+./sync.sh --dry-run    # 先看会装什么，不动文件
+./sync.sh              # 装到 ~/.workbuddy/skills/
 ```
 
-然后按你的 agent 复制对应目录：
+`sync.sh` 只碰它内部列出的 5 个 skill，**你自己已有的 skill 一概不动**。已存在的会被备份成 `SKILL.md.bak_时间戳` 再覆盖。
+
+**装完必须新开一个会话**——技能清单是会话启动时生成的，中途安装不会热加载。
+
+> 实测：这个环境**只扫描用户级** `~/.workbuddy/skills/`。项目级的 `.workbuddy/skills/` 放几天都不会被加载。
+
+### Claude Code / opencode / 其他
+
+手工复制对应目录即可：
 
 ```
 <repo>/deliver/  recipe/  swarm/  verify-app/  encode-lessons/
    ↓
 .claude/skills/<name>/SKILL.md       → Claude Code
-.workbuddy/skills/<name>/SKILL.md    → WorkBuddy（需重启会话）
 .opencode/skills/<name>/SKILL.md     → opencode
 ```
 
-每个 skill 目录里只有一个 `SKILL.md`，**自包含，不用改任何路径**。
+每个 skill 目录里只有 `SKILL.md` 一个文件，**自包含，不用改任何路径**。
 
-### 方式二：只拷你需要的那几个
+### 不想装到目录也行
 
-五个 skill 互相不依赖，单独用也行：
+五个文件都是纯文本。把某个 `SKILL.md` 的内容直接贴进对话，效果一样——它本质就是一份 agent 照着做的清单。
 
-| 只想要 | 拷贝这个目录 |
+### 只想用一个
+
+五个 skill 互相不依赖：
+
+| 只想要 | 用这个目录 |
 |---|---|
 | 把需求问清楚 | `recipe/` |
 | 并行派活 | `swarm/` |
 | 给项目加验证 | `verify-app/` |
 | 把错误变成规则 | `encode-lessons/` |
 | 全流程总控 | `deliver/`（会调用上面四个） |
-
-### WorkBuddy 用户注意
-
-实测这个环境**只扫描用户级** `~/.workbuddy/skills/`，项目级 `.workbuddy/skills/` 放了几天从没被加载过。
-
-所以装完要复制到用户级目录。仓库里的 `sync.sh` 是给"项目级当源、用户级当安装副本"这种维护方式用的：
-
-```bash
-cd .workbuddy/skills
-./sync.sh --dry-run   # 先看会改什么
-./sync.sh             # 真同步（旧版自动备份成 .bak_时间戳）
-```
-
-**复制或同步完都要新开一个会话才生效**——技能清单是会话启动时生成的。
 
 ---
 
