@@ -70,7 +70,7 @@ deliver 第 0 步：够格判断（四条，命中任一才继续）
 ### 方式一：克隆后复制（推荐）
 
 ```bash
-git clone https://github.com/<你的用户名>/ai-delivery-skills.git
+git clone https://github.com/Ccnaic/ai-delivery-skills.git
 ```
 
 然后按你的 agent 复制对应目录：
