@@ -1,0 +1,23 @@
+========================================================================
+变异测试  2026-11-08T21:08:49
+========================================================================
+基线 verify.py exit=0（期望 0）
+变异版 verify.py exit=1（期望非 0）
+结论：检测到破坏，判据有效 (PASS)
+
+--- 变异版失败项（应该抓到 balance 恒为 0）---
+[FAIL] balance 精确到分（100.10 - 35.50 - 0.10 = 64.50） :: exit=0
+
+完整变异转录：evidence/mutation_verify.txt
+
+--- 变异版 verify 输出（末尾）---
+  out| 示例：accountant add 35.5 -c 餐饮 -n 午饭
+[PASS] 零第三方依赖（python -I 隔离环境仍可 --help） :: exit=0
+[PASS] 帮助可读（含示例） :: help 文本
+[PASS] 清理：临时账本已删除 :: D:\Cc\Tools\tmp\tmps055bzrf\ledger.jsonl
+[PASS] 清理后证据仍在 :: D:\Cc\Tools\tmp\tmpl7ddhdow\mutant_evidence\verify_20261108_210849.txt
+
+RESULT: 19/20 PASS; 1 FAIL
+
+证据文件：D:\Cc\Tools\tmp\tmpl7ddhdow\mutant_evidence\verify_20261108_210849.txt
+结论：FAIL (19/20)

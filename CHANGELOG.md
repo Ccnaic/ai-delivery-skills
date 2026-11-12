@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## v0.5 — 2026-11-13
+
+**外部独立 QA 测试结果为 FAIL（1 个 BLOCKER + 4 个次要项），全部修复。**
+
+| 编号 | 级别 | 问题 | 修法 |
+|---|---|---|---|
+| F1 | **BLOCKER** | `sync.sh` 在 git 里是 `100644`，Linux/macOS 用户 clone 后 `./sync.sh` 直接 `Permission denied`（exit 126） | `git update-index --chmod=+x sync.sh`，并加 CI 断言权限位 |
+| F2 | MAJOR | README 声称的实测数据不可复现——仓库里没有 `verify.py` / `accountant.py` / 证据 | 新增 `examples/cli-ledger/`：完整代码 + `verify.py` + `mutation_test.py` + 原始证据，**并已实测在仓库目录下能跑出 20/20** |
+| F3 | MINOR | `encode-lessons` 的触发阈值自相矛盾（描述写"第二次"，正文写"第 3 次"） | 统一为「第三次」 |
+| F4 | MINOR | CHANGELOG 引用了仓库里不存在的 `archive/skills-superseded/` | 改为明确说明该目录只在维护者本机 |
+| F5 | MINOR | `examples/` 落后于当前模板，且差距清单不全 | 新增 `cli-ledger/README.md`，把 5 项差距全部列清（含之前漏掉的 Phase D 和 DELIVERY.md） |
+
+**新增 `.github/workflows/ci.yml`**，防这五类问题回归：
+
+- `sync.sh` 权限位必须是 `100755`
+- `shellcheck`
+- 五个 SKILL.md frontmatter 完整且 `name` 与目录名一致
+- 无机器特定路径（`C://`、`/Users/xxx/`、`/home/xxx/`），但放过 `~/` 安装路径
+- 无垃圾/敏感文件
+- 安装到隔离 `HOME` 并验证幂等
+- **示例必须真的跑出 20/20**（否则 README 的声称失效）
+
 ## v0.4 — 2026-11-10
 
 - README 补「WorkBuddy 用户注意：改完要同步」：项目级目录在这个环境里不会被扫描，只认用户级
@@ -34,7 +56,7 @@
 
 **清理**
 
-- 归档两个被取代的旧 skill 到 `archive/skills-superseded/`
+- 归档两个被取代的旧 skill（`dual-agent-loop`、`requirement-interrogation`）到本地 `archive/` 目录——该目录仅存在于维护者本机，**不在本仓库内**
   - `dual-agent-loop`（指向 16 KB 的 PROTOCOL.md v1.0）
   - `requirement-interrogation`（被 `recipe` 取代）
 

@@ -1,0 +1,13 @@
+test_add_writes_and_new_instance_reads (__main__.StoreTest.test_add_writes_and_new_instance_reads) ... ok
+test_balance_is_exact_to_cent (__main__.StoreTest.test_balance_is_exact_to_cent) ... ok
+test_empty_ledger (__main__.StoreTest.test_empty_ledger) ... ok
+test_month_filter (__main__.StoreTest.test_month_filter) ... ok
+test_order_limit_and_income (__main__.StoreTest.test_order_limit_and_income) ... ok
+test_rejects_bad_amounts (__main__.StoreTest.test_rejects_bad_amounts) ... ok
+test_rejects_bad_date_and_month (__main__.StoreTest.test_rejects_bad_date_and_month) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.049s
+
+OK
+EXIT=0

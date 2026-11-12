@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 独立 QA 报的 BLOCKER：Windows 上 git 存不住可执行位，
+      # 导致 Linux/macOS 用户 clone 后 ./sync.sh 直接 Permission denied。
+      - name: sync.sh 必须可执行
+        run: |
+          mode=$(git ls-files -s sync.sh | cut -c1-6)
+          echo "sync.sh mode = $mode"
+          if [ "$mode" != "100755" ]; then
+            echo "::error::sync.sh 权限位是 $mode，应为 100755。修复：git update-index --chmod=+x sync.sh"
+            exit 1
+          fi
+
+      - name: shellcheck
+        run: shellcheck sync.sh
+
+      - name: 五个 skill 齐全且 frontmatter 完整
+        run: |
+          fail=0
+          for d in deliver recipe swarm verify-app encode-lessons; do
+            f="$d/SKILL.md"
+            if [ ! -f "$f" ]; then echo "::error::缺 $f"; fail=1; continue; fi
+            if ! head -20 "$f" | grep -qE "^name: *$d *$"; then
+              echo "::error::$f 的 name 与目录名不一致（agent 会认不出来）"; fail=1
+            fi
+            if ! head -20 "$f" | grep -qE "^description: .+"; then
+              echo "::error::$f 缺 description"; fail=1
+            fi
+          done
+          exit $fail
+
+      # skill 里出现机器特定路径，别人装了会指向不存在的文件。
+      # 注意：~/.workbuddy/skills/ 这类是合法安装路径，必须放过。
+      - name: 不得有机器特定路径
+        run: |
+          if grep -rnE '([A-Za-z]:[\\/](?!/))|(/Users/[A-Za-z0-9._-]+/)|(/home/[A-Za-z0-9._-]+/)' \
+               --include='*.md' --include='*.sh' . ; then
+            echo "::error::发现机器特定路径，别人装了会指向不存在的地址"
+            exit 1
+          fi
+          echo "OK：无机器特定路径"
+
+      - name: 不得提交垃圾或敏感文件
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env.*|.*\.bak.*|.*\.zip|.*\.log)$'; then
+            echo "::error::发现不该提交的文件"
+            exit 1
+          fi
+          echo "OK"
+
+      - name: 安装到隔离 HOME 并验证幂等
+        run: |
+          export HOME=$(mktemp -d)
+          ./sync.sh --dry-run
+          ./sync.sh
+          ./sync.sh   # 第二次应全部「已是最新」
+          for d in deliver recipe swarm verify-app encode-lessons; do
+            cmp "$d/SKILL.md" "$HOME/.workbuddy/skills/$d/SKILL.md" \
+              || { echo "::error::$d 安装后内容不一致"; exit 1; }
+          done
+          echo "OK：安装与幂等通过"
+
+      # README 声称这份示例可复现，就必须真的能复现。
+      - name: 示例可复现
+        working-directory: examples/cli-ledger
+        run: |
+          python3 verify.py | tee /tmp/out.txt
+          grep -qE "RESULT: 20/20 PASS" /tmp/out.txt \
+            || { echo "::error::verify.py 不再 20/20，README 的声称已失效"; exit 1; }
+
+      - name: 清理示例跑出来的证据（保持工作区干净）
+        if: always()
+        working-directory: examples/cli-ledger
+        run: git clean -fd evidence/ || true

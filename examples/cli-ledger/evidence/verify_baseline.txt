@@ -1,0 +1,117 @@
+========================================================================
+verify-app evidence  2026-11-08T21:08:15
+root=D:\workbuddy项目\skill测试
+data=D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl
+========================================================================
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl --help
+  exit=0
+  out| usage: accountant [-h] [--data 路径] 命令 ...
+  out| 
+  out| 命令行记账工具：记一笔、查余额、看记录。数据保存在本地 JSONL 文件。
+  out| 
+  out| positional arguments:
+  out|   命令
+  out|     add       记一笔（默认记支出）
+  out|     balance   查余额
+  out|     list      看记录（最新在前）
+  out| 
+  out| options:
+  out|   -h, --help  show this help message and exit
+  out|   --data 路径   账本文件路径（默认：C:\Users\Cc\.ledger-cli\ledger.jsonl）
+  out| 
+  out| 示例：accountant add 35.5 -c 餐饮 -n 午饭
+[PASS] 启动：--help 退出码 0 且列出三命令 :: exit=0
+[PASS] 就绪判定：帮助里出现「命令行记账工具」 :: help 标题
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add 100.10 --income --date 2026-11-01
+  exit=0
+  out| 已记账：+100.10  未分类  —  2026-11-01 00:00:00
+  out| 当前余额：+100.10（收入 +100.10 / 支出 +0.00）
+[PASS] add 记收入 :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add 35.5 -c 餐饮 -n 午饭 --date 2026-11-02
+  exit=0
+  out| 已记账：-35.50  餐饮  午饭  2026-11-02 00:00:00
+  out| 当前余额：+64.60（收入 +100.10 / 支出 -35.50）
+[PASS] add 记支出（分类/备注） :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add 0.1 --date 2026-11-03
+  exit=0
+  out| 已记账：-0.10  未分类  —  2026-11-03 00:00:00
+  out| 当前余额：+64.50（收入 +100.10 / 支出 -35.60）
+[PASS] add 第三笔 :: exit=0
+[PASS] 副作用：账本落盘 3 行合法 JSON :: 行数=3
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl balance
+  exit=0
+  out| 收入合计：+100.10
+  out| 支出合计：-35.60
+  out| 当前余额：+64.50
+  out| 记录条数：3
+[PASS] balance 精确到分（100.10 - 35.50 - 0.10 = 64.50） :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl list
+  exit=0
+  out| 记录（最新在前）：
+  out| 2026-11-03 00:00:00     -0.10  未分类  —
+  out| 2026-11-02 00:00:00    -35.50  餐饮  午饭
+  out| 2026-11-01 00:00:00   +100.10  未分类  —
+  out| 共 3 条；余额 +64.50
+[PASS] list 最新在前 :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl list --limit 2
+  exit=0
+  out| 记录（最新在前）：
+  out| 2026-11-03 00:00:00     -0.10  未分类  —
+  out| 2026-11-02 00:00:00    -35.50  餐饮  午饭
+  out| 共 2 条；余额 +64.50
+[PASS] list --limit 2 只出 2 条 :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl list --month 2026-11
+  exit=0
+  out| 记录（最新在前）：
+  out| 2026-11-03 00:00:00     -0.10  未分类  —
+  out| 2026-11-02 00:00:00    -35.50  餐饮  午饭
+  out| 2026-11-01 00:00:00   +100.10  未分类  —
+  out| 共 3 条；余额 +64.50
+[PASS] list --month 2026-11 命中 3 条 :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl list --month 2026-10
+  exit=0
+  out| （没有记录）
+[PASS] list --month 2026-10 为空 :: exit=0
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add abc
+  exit=2
+  err| 错误：金额不是数字：'abc'
+[PASS] 错误输入：非数字金额 :: exit=2
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add 0
+  exit=2
+  err| 错误：金额必须大于 0：'0'
+[PASS] 错误输入：零金额 :: exit=2
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add -5
+  exit=2
+  err| 错误：金额必须大于 0：'-5'
+[PASS] 错误输入：负金额 :: exit=2
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl add 1 --date 11/08/2026
+  exit=2
+  err| 错误：日期格式不对：'11/08/2026'（要 YYYY-MM-DD 或 YYYY-MM-DD HH:MM:SS）
+[PASS] 错误输入：非法日期 :: exit=2
+$ -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl list --month 2026-13
+  exit=2
+  err| 错误：月份格式不对：'2026-13'（要 YYYY-MM）
+[PASS] 错误输入：非法月份 :: exit=2
+$ -I -X utf8 D:\workbuddy项目\skill测试\accountant.py --data D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl --help
+  exit=0
+  out| usage: accountant [-h] [--data 路径] 命令 ...
+  out| 
+  out| 命令行记账工具：记一笔、查余额、看记录。数据保存在本地 JSONL 文件。
+  out| 
+  out| positional arguments:
+  out|   命令
+  out|     add       记一笔（默认记支出）
+  out|     balance   查余额
+  out|     list      看记录（最新在前）
+  out| 
+  out| options:
+  out|   -h, --help  show this help message and exit
+  out|   --data 路径   账本文件路径（默认：C:\Users\Cc\.ledger-cli\ledger.jsonl）
+  out| 
+  out| 示例：accountant add 35.5 -c 餐饮 -n 午饭
+[PASS] 零第三方依赖（python -I 隔离环境仍可 --help） :: exit=0
+[PASS] 帮助可读（含示例） :: help 文本
+[PASS] 清理：临时账本已删除 :: D:\Cc\Tools\tmp\tmpy2hgz6gs\ledger.jsonl
+[PASS] 清理后证据仍在 :: D:\workbuddy项目\skill测试\evidence\verify_20261108_210817.txt
+
+RESULT: 20/20 PASS; 0 FAIL

@@ -17,3 +17,7 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# 示例跑一次会生成带时间戳的新证据，不纳入版本控制
+examples/cli-ledger/evidence/verify_20*.txt
+examples/cli-ledger/evidence/mutant_verify_20*.txt

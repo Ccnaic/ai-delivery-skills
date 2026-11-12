@@ -1,0 +1,11 @@
+test_bad_input_exits_2_with_chinese_error (__main__.CliTest.test_bad_input_exits_2_with_chinese_error) ... ok
+test_balance_on_missing_file (__main__.CliTest.test_balance_on_missing_file) ... ok
+test_full_user_flow (__main__.CliTest.test_full_user_flow) ... ok
+test_help_lists_three_commands (__main__.CliTest.test_help_lists_three_commands) ... ok
+test_no_command_prints_help (__main__.CliTest.test_no_command_prints_help) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.477s
+
+OK
+EXIT=0

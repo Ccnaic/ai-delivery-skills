@@ -1,5 +1,7 @@
 # 五个交付 skill：把「要什么」问清，然后逐条打勾
 
+[![ci](https://github.com/Ccnaic/ai-delivery-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/Ccnaic/ai-delivery-skills/actions/workflows/ci.yml)
+
 > **状态：beta。** 只跑过一次全链（749 行 CLI 任务）。哪些验过、哪些没验，见 [验证到什么程度](#验证到什么程度重要别当成稳定版)。**用之前先读那一节。**
 
 **这是什么**：五个纯 Markdown 的 skill，给 AI agent 加一套交付纪律。不依赖多 agent、不依赖特定平台。
@@ -200,6 +202,14 @@ cd ai-delivery-skills
 任务：「做一个命令行记账工具，能记一笔、查余额、看记录。做得实用点。」
 规模：749 行 Python / 18 个文件
 模型：deepseek-v4.1-flash（单进程 opencode，无法真并行）
+```
+
+**这次运行的产物在 [`examples/cli-ledger/`](examples/cli-ledger/)，能直接跑：**
+
+```bash
+cd examples/cli-ledger
+python3 verify.py           # 20/20 PASS
+python3 mutation_test.py    # 19/20 FAIL —— 这是对的，说明断言能被打败
 ```
 
 ### 验过的
