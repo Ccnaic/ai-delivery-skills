@@ -40,10 +40,11 @@ jobs:
           exit $fail
 
       # skill 里出现机器特定路径，别人装了会指向不存在的文件。
-      # 注意：~/.workbuddy/skills/ 这类是合法安装路径，必须放过。
+      # 注意 1：~/.workbuddy/skills/ 这类是合法安装路径，必须放过。
+      # 注意 2：不能用 (?!) 前瞻——grep -E 不支持，会退化成永不命中（本仓库踩过）。
       - name: 不得有机器特定路径
         run: |
-          if grep -rnE '([A-Za-z]:[\\/](?!/))|(/Users/[A-Za-z0-9._-]+/)|(/home/[A-Za-z0-9._-]+/)' \
+          if grep -rnE '([A-Za-z]:[\\])|([A-Za-z]:/[^/])|(/Users/[A-Za-z0-9._-]+/)|(/home/[A-Za-z0-9._-]+/)' \
                --include='*.md' --include='*.sh' . ; then
             echo "::error::发现机器特定路径，别人装了会指向不存在的地址"
             exit 1
