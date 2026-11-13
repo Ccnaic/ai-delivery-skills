@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/Ccnaic/ai-delivery-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/Ccnaic/ai-delivery-skills/actions/workflows/ci.yml)
 
-> **状态：beta。** 只跑过一次全链（749 行 CLI 任务）。哪些验过、哪些没验，见 [验证到什么程度](#验证到什么程度重要别当成稳定版)。**用之前先读那一节。**
+> **状态：beta。** 只跑过一次全链（753 行 CLI 任务）。哪些验过、哪些没验，见 [验证到什么程度](#验证到什么程度重要别当成稳定版)。**用之前先读那一节。**
 
 **这是什么**：五个纯 Markdown 的 skill，给 AI agent 加一套交付纪律。不依赖多 agent、不依赖特定平台。
 
@@ -202,7 +202,7 @@ cd ai-delivery-skills
 
 ```
 任务：「做一个命令行记账工具，能记一笔、查余额、看记录。做得实用点。」
-规模：749 行 Python / 18 个文件
+规模：753 行 Python / 18 个文件
 模型：deepseek-v4.1-flash（单进程 opencode，无法真并行）
 ```
 
@@ -230,7 +230,7 @@ python3 mutation_test.py    # 19/20 FAIL —— 这是对的，说明断言能�
 
 | 没验 | 为什么重要 |
 |---|---|
-| **真实规模任务** | 749 行是那个失败案例的 1/7。**任务不够大，agent 根本不需要取舍，"悄悄缩小范围"这种失败就不会发生**——也就是说，它要防的病，这次没机会出现 |
+| **真实规模任务** | 753 行是那个失败案例的 1/7。**任务不够大，agent 根本不需要取舍，"悄悄缩小范围"这种失败就不会发生**——也就是说，它要防的病，这次没机会出现 |
 | **真人在场** | 8 个问题是 agent 自己扮演用户答的。**recipe 的核心机制（人拍分母）从未真正跑过**，5/5 的分母是 AI 自己定的 |
 | **并行串联** | 35% 那个数字来自另一个实验，**没用上 recipe/swarm**。`切块 → 真并行 → verify` 这条链一次都没串过 |
 | **GUI / 游戏路径** | verify 只测了命令行。最难的「启动窗口、点按钮、截图判断」未验 |
@@ -246,7 +246,7 @@ python3 mutation_test.py    # 19/20 FAIL —— 这是对的，说明断言能�
 
 ## 这次测试暴露的 15 处问题，修了 3 处
 
-（完整清单见 `examples/PROBLEMS.md`）
+（完整清单见 `examples/cli-ledger/PROBLEMS.md`）
 
 | 问题 | 修法 |
 |---|---|
