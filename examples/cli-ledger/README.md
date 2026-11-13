@@ -22,7 +22,9 @@ python mutation_test.py    # 期望 19/20 FAIL（这是对的，见下）
 它把 `balance()` 改成永远返回 0，然后跑同一份 `verify.py`。
 如果 verify 仍然全绿，说明那条断言是假的；现在它变成 19/20，**说明断言真的能被打败**。
 
-跑完会在 `evidence/` 下生成带时间戳的新文件（已 gitignore，不会污染仓库）。
+跑完会在 `evidence/` 下生成带时间戳的**新文件**（如 `mutation_test_20261114_012345.txt`），**不会覆盖仓库里已提交的那几份**，也不会弄脏 `git status`——输出用时间戳命名，规则写在 `.gitignore` 里。
+
+仓库里固定保存的是这四份，供离线阅读：`verify_baseline.txt` / `verify_rerun.txt` / `mutation_test.txt` / `mutation_verify.txt`。
 
 ---
 

@@ -176,13 +176,30 @@ worker 说 PASS 但没给证据位置 → 不算，重派一次。
 
 ```bash
 # worker 1（后台）
-cd run/m1 && echo "" | opencode run --auto --model <model> "读 TASK.md 并完成" &
+cd run/m1 && echo "" | opencode run --auto --model <model> "<把 brief 全文粘在这里>" &
 
 # worker 2（后台，同一条消息里发）
-cd run/m2 && echo "" | opencode run --auto --model <model> "读 TASK.md 并完成" &
+cd run/m2 && echo "" | opencode run --auto --model <model> "<把 brief 全文粘在这里>" &
 ```
 
-**注意**：`echo "" |` 不能省，否则 CLI 静默退出。
+**注意 1**：`echo "" |` 不能省，否则 CLI 静默退出。
+
+**注意 2（踩过）**：brief **必须内联进命令**，不要写成「读 TASK.md」。
+之前这里写的是「读 TASK.md 并完成」，但全文从没说过要创建这个文件——照抄必失败（worker 报文件不存在）。
+
+如果你更愿意用文件（brief 太长时值得），**必须先自己写出来**，且写成**绝对路径**：
+
+```bash
+# 派发前，每块各写一份
+cat > run/m1/TASK.md <<'BRIEF'
+<A3 的 brief 五项>
+BRIEF
+
+# 派发时用绝对路径，不要依赖 worker 的 cwd
+cd run/m1 && echo "" | opencode run --auto --model <model> "读 $(pwd)/TASK.md 并完成" &
+```
+
+**判据**：不管用哪种，`ls run/mN/` 里能看到的文件，必须和命令行里引用的一致。
 
 ### 模型：统一，不按难度分
 

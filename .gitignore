@@ -1,3 +1,7 @@
+# Python
+__pycache__/
+*.pyc
+
 # 操作系统
 .DS_Store
 Thumbs.db
@@ -19,5 +23,7 @@ desktop.ini
 *.swp
 
 # 示例跑一次会生成带时间戳的新证据，不纳入版本控制
+# （仓库里提交的是 verify_baseline.txt / verify_rerun.txt / mutation_test.txt 这几份固定名的）
 examples/cli-ledger/evidence/verify_20*.txt
-examples/cli-ledger/evidence/mutant_verify_20*.txt
+examples/cli-ledger/evidence/mutation_verify_20*.txt
+examples/cli-ledger/evidence/mutation_test_20*.txt

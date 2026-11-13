@@ -53,8 +53,9 @@ jobs:
 
       - name: 不得提交垃圾或敏感文件
         run: |
-          if git ls-files | grep -E '(^|/)(\.env.*|.*\.bak.*|.*\.zip|.*\.log)$'; then
-            echo "::error::发现不该提交的文件"
+          # 注意：这条曾经漏掉 .pyc，导致 2 个 __pycache__ 文件被跟踪却显示绿色
+          if git ls-files | grep -E '(^|/)(\.env.*|.*\.bak.*|.*\.zip|.*\.log|\.pyc)$|\.pyc$|__pycache__/'; then
+            echo "::error::发现不该提交的文件（.env/.bak/.zip/.log/.pyc/__pycache__）"
             exit 1
           fi
           echo "OK"
@@ -78,6 +79,30 @@ jobs:
           python3 verify.py | tee /tmp/out.txt
           grep -qE "RESULT: 20/20 PASS" /tmp/out.txt \
             || { echo "::error::verify.py 不再 20/20，README 的声称已失效"; exit 1; }
+
+      # 这条是闸门的自我证明：示例菜谱是"全程 AI 代答"产出的。
+      # 新 G1 必须判它 ⚠️（退出码 1）。如果它被判 ✅，说明 G1 又退化成免责声明了。
+      - name: G1 必须能拒绝「全 AI 代答」的菜谱
+        run: |
+          set +e
+          python3 tools/g1-check.py > /tmp/g1.txt 2>&1
+          code=$?
+          cat /tmp/g1.txt
+          if [ "$code" -eq 0 ]; then
+            echo "::error::G1 判定通过了一份全 AI 代答的菜谱 —— 闸门失效，退化成免责声明了"
+            exit 1
+          fi
+          echo "OK：G1 拒绝通过（K 不为 0），闸门是真的"
+
+      - name: 跑示例不得弄脏已跟踪文件
+        run: |
+          dirty=$(git status --porcelain | wc -l)
+          echo "跑完示例后的改动数：$dirty"
+          if [ "$dirty" -ne 0 ]; then
+            echo "::error::跑一次示例弄脏了仓库，说明输出覆盖了已提交的文件"
+            git status --short
+            exit 1
+          fi
 
       - name: 清理示例跑出来的证据（保持工作区干净）
         if: always()

@@ -66,7 +66,8 @@ def main() -> int:
     failed_lines = [line for line in mutated.stdout.splitlines() if "[FAIL]" in line]
     mutant_files = sorted((base / "mutant_evidence").glob("verify_*.txt"))
     if mutant_files:
-        shutil.copy2(mutant_files[-1], evidence_dir / "mutation_verify.txt")
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        shutil.copy2(mutant_files[-1], evidence_dir / f"mutation_verify_{stamp}.txt")
 
     report = [
         "=" * 72,
@@ -79,16 +80,19 @@ def main() -> int:
         "--- 变异版失败项（应该抓到 balance 恒为 0）---",
         *(failed_lines or ["（没有 FAIL 行）"]),
         "",
-        "完整变异转录：evidence/mutation_verify.txt",
+        "完整变异转录：evidence/mutation_verify_<时间戳>.txt",
         "",
         "--- 变异版 verify 输出（末尾）---",
         "\n".join(mutated.stdout.rstrip().splitlines()[-10:]),
         "",
     ]
     text = "\n".join(report)
-    (evidence_dir / "mutation_test.txt").write_text(text, encoding="utf-8")
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = evidence_dir / f"mutation_test_{stamp}.txt"
+    out.write_text(text, encoding="utf-8")
     print(text)
-    print(f"证据文件：{evidence_dir / 'mutation_test.txt'}")
+    print(f"证据文件：{out}")
+    print("（本次输出用时间戳命名，不会覆盖仓库里已提交的 mutation_test.txt）")
     tmp.cleanup()
     return 0 if detected else 1
 

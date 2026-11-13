@@ -13,6 +13,9 @@
 #   3. 只想看会改什么                → 加 --dry-run
 #
 # 只碰下面 SKILLS 里列出的 5 个，其余（比如你自己的 deja-history）一概不动。
+#
+# 注意：这 5 个必须一起装。recipe/swarm/verify-app/encode-lessons 互相独立，
+#       但 deliver 依赖它们四个——只装 deliver 会在第一个重档任务里断掉。
 # 装完要新开一个会话才生效——技能清单是会话启动时生成的。
 
 set -uo pipefail
